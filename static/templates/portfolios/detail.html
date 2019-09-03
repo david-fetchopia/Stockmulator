@@ -1,0 +1,107 @@
+<!-- Only show detail if no error message. Error message appears
+when someone navigates to invalid portfolioID. -->
+<div ng-show="!portfolioNotFound">
+  <!-- Main page header-->
+  <div class="row">
+    <div class="col-xs-12">
+      <h1 style="display: inline;">{{ portfolio.name }}</h1>
+      <h4 style="display: inline;">, by {{ userID }} on {{ portfolio.created | date:'MM/dd/yyyy'}}</h4>
+      <!-- New Transaction button to trigger modal -->
+      <button type="button"
+              class="btn btn-success pull-right"
+              ng-show="isPageOwner"
+              data-toggle="modal"
+              data-target="#newTransactionModal">New Transaction</button>
+    </div>
+  </div>
+  <!-- New Transaction Modal directive-->
+  <new-transaction-modal portfolio-id="{{ portfolio.id }}"
+                         initialize="initialize()">
+  </new-transaction-modal>
+  </br>
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="alert alert-danger" ng-show="getQuoteError">
+        Could not get stock quote data. This must mean there is an issue with the Yahoo Finance
+        webservice.
+      </div>
+    </div>
+  </div>
+  <!-- Overall Return, Portfolio Value, and Creation Date row-->
+  <div class="row">
+    <div class="col-xs-4">
+      <h4>Overall Return:</h4>
+      <h4 ng-style="{color: (portfolio.overallReturn >= 0 ? 'green' : 'red')}">
+        {{ portfolio.overallReturn }}%</h4>
+    </div>
+    <div class="col-xs-4">
+      <h4>Cash:</h4>
+      <h4>${{ portfolio.cash | number }}</h4>
+    </div>
+    <div class="col-xs-4">
+      <h4>Market Value:</h4>
+      <h4>${{ portfolio.marketValue | number }}</h4>
+    </div>
+  </div>
+  <!-- Holdings-->
+  <div class="row">
+    <div class="col-xs-6">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Holdings</h3>
+        </div>
+        <table class="table">
+          <thead>
+            <th>Ticker</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>% Change</th>
+          </thead>
+          <tbody>
+            <tr ng-repeat="stock in portfolio.stocks">
+              <td>{{ stock.ticker }}</td>
+              <td>{{ stock.quantity }}</td>
+              <td>{{ stock.price }}</td>
+              <td ng-style="{color: (stock.change_percent >= 0 ? 'green' : 'red' )}">
+                {{ stock.change_percent }}%</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <!-- Transactions-->
+    <div class="col-xs-6">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Transactions</h3>
+        </div>
+        <table class="table">
+          <thead>
+            <th>Ticker</th>
+            <th>Side</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Date</th>
+          </thead>
+          <tbody>
+            <tr ng-repeat="transaction in transactions">
+              <td>{{ transaction.ticker }}</td>
+              <td>{{ transaction.transaction_type }}</td>
+              <td>{{ transaction.quantity }}</td>
+              <td>{{ transaction.price }}</td>
+              <td>{{ transaction.time | date:'MM/dd/yyyy H:mm'}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <!-- Portfolio not found error message goes here.-->
+  <div class="col-md-12" ng-show="portfolioNotFound">
+    <h3><span class="glyphicon glyphicon-remove-circle"></span>
+      Error: This portfolio could not be found.
+    </h3>
+  </div>
+</div>
